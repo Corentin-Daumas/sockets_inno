@@ -15,7 +15,6 @@ pas besoin de refaire la connexion a chaque fois */
 int main(int argc, char const *argv[]) { 
 	int sock_s, new_socket, valRead;
 	SOCKADDR_IN address;
-	int opt = 1;
 	char buffer[1024] = {0}; 
 	char *msg = "Hello! c'est le serveur";
 
@@ -35,14 +34,14 @@ int main(int argc, char const *argv[]) {
 	bind(sock_s, (SOCKADDR*)&address, sizeof(address)); /* bind de la socket */
 
 	listen(sock_s, 10); /* place un socket en attente de connexion 
-	le 10 represente le nbr de connexion pouvant etre lis en attente */
+	le 10 represente le nbr de connexion max pouvant etre lu en attente */
 
 	new_socket = accept(sock_s, (SOCKADDR*)&address, &adressLen); /* permet la connexion en acceptant un appel*/
 	/* sock_s: socket precedemment ouvert
-	   &address: tampon qui stock l'adresse de l'appelant
-	   &adressLen: taille de l'adresse de l'appelant */
+	&address: tampon qui stock l'adresse de l'appelant
+	&adressLen: taille de l'adresse de l'appelant */
 
-	valRead = read(new_socket, buffer, sizeof(buffer)); /* permet la lecture dans un c=socket en mode connecte (TCP) */
+	valRead = read(new_socket, buffer, sizeof(buffer)); /* permet la lecture dans un socket en mode connecte (TCP) */
 	/* new_socket: socket precedemment ouvert
 	buffer: pointeur sur un tampon qui va recevoir les octets d'un client
 	sizeof(buffer): nbr d'octets lu*/

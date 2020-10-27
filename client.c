@@ -10,9 +10,14 @@ typedef struct sockaddr_in SOCKADDR_IN;
 
 int main(int argc, char const *argv[]) { 
     int sock_c, valRead; 
-    SOCKADDR_IN serv_address; 
-    char *msg = "Hello! c'est le client"; 
+    SOCKADDR_IN serv_address;
+    char* msg = "Hello! c'est le client"; 
     char buffer[1024] = {0}; 
+
+    /* saisie du message */
+    char* message;
+    printf(">>>");
+    scanf("%24[^\n]", message);
 
     sock_c = socket(AF_INET, SOCK_STREAM, 0); 
 
@@ -23,7 +28,7 @@ int main(int argc, char const *argv[]) {
 
     connect(sock_c, (struct sockaddr *)&serv_address, sizeof(serv_address));
 
-    send(sock_c, msg, strlen(msg), 0 ); 
+    send(sock_c, message, strlen(message), 0 ); 
 
     valRead = read(sock_c, buffer, 1024); 
     printf("%s\n", buffer);
