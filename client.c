@@ -23,7 +23,7 @@ int main(int argc, char const *argv[]) {
 
     serv_address.sin_family = AF_INET; 
     serv_address.sin_port = htons(PORT); 
-    
+
 	inet_pton(AF_INET, "127.0.0.1", &serv_address.sin_addr);
 
     connect(sock_c, (struct sockaddr *)&serv_address, sizeof(serv_address));
