@@ -6,45 +6,53 @@
 #include <string.h> 
 #define PORT 8080 
 
+typedef struct sockaddr SOCKADDR;
+typedef struct sockaddr_in SOCKADDR_IN;
+
+/* On utilisera le mode connecte car plus simple
+pas besoin de refaire la connexion a chaque fois */
+
 int main(int argc, char const *argv[]) { 
-    int server_fd, new_socket, valread; 
-    struct sockaddr_in address; 
-    int opt = 1; 
-    int addrlen = sizeof(address); 
-    char buffer[1024] = {0}; 
-    char *hello = "Hello from server"; 
-    
-    // Creating socket file descriptor 
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) { 
-        perror("socket failed"); 
-        exit(EXIT_FAILURE); 
-    } 
-    
-    // Forcefully attaching socket to the port 8080 
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) { 
-        perror("setsockopt"); 
-        exit(EXIT_FAILURE); 
-    } 
-    address.sin_family = AF_INET; 
-    address.sin_addr.s_addr = INADDR_ANY; 
-    address.sin_port = htons( PORT ); 
-    
-    // Forcefully attaching socket to the port 8080 
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) { 
-        perror("bind failed"); 
-        exit(EXIT_FAILURE); 
-    } 
-    if (listen(server_fd, 3) < 0) { 
-        perror("listen"); 
-        exit(EXIT_FAILURE); 
-    } 
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) { 
-        perror("accept"); 
-        exit(EXIT_FAILURE); 
-    } 
-    valread = read( new_socket , buffer, 1024); 
-    printf("%s\n",buffer ); 
-    send(new_socket , hello , strlen(hello) , 0 ); 
-    printf("Hello message sent\n"); 
-    return 0; 
-} 
+	int sock_s, new_socket, valRead;
+	SOCKADDR_IN address;
+	int opt = 1;
+	char buffer[1024] = {0}; 
+	char *msg = "Hello! c'est le serveur";
+
+	int adressLen = sizeof(address); 
+
+	/* AF_INET: pour TCP/IP, adresse internet sur 4 octets:
+	adresse IP et num. de port pour pouvoir avoir plusieurs sockets sur une meme machine
+	SOCK_STREAM: service oriente connexion, comm. par flot de donnees (un seul bloc)
+	protocole = 0: car pas utile en TCP/IP */
+	sock_s = socket(AF_INET, SOCK_STREAM, 0);
+
+	address.sin_family = AF_INET; /* protocole internet */
+	address.sin_addr.s_addr = htonl(INADDR_ANY); /* toutes les addresses IP de la station (adresse de l'hote) 
+	pour specifier l'adresse a utiliser: inet_adr("127.0.0.1"); */
+	address.sin_port = htons(PORT); /* designe le port utilise */
+
+	bind(sock_s, (SOCKADDR*)&address, sizeof(address)); /* bind de la socket */
+
+	listen(sock_s, 10); /* place un socket en attente de connexion 
+	le 10 represente le nbr de connexion pouvant etre lis en attente */
+
+	new_socket = accept(sock_s, (SOCKADDR*)&address, &adressLen); /* permet la connexion en acceptant un appel*/
+	/* sock_s: socket precedemment ouvert
+	   &address: tampon qui stock l'adresse de l'appelant
+	   &adressLen: taille de l'adresse de l'appelant */
+
+	valRead = read(new_socket, buffer, sizeof(buffer)); /* permet la lecture dans un c=socket en mode connecte (TCP) */
+	/* new_socket: socket precedemment ouvert
+	buffer: pointeur sur un tampon qui va recevoir les octets d'un client
+	sizeof(buffer): nbr d'octets lu*/
+	printf("%s\n", buffer);
+
+	send(new_socket, msg, strlen(msg), 0); /* permet d'ecrire dans une socket en mode TCP*/
+	/* new_socket: socket precedemment ouvert
+	msg:(buffer) tampon contenant les octets a envoyer au client
+	strlen(msg): nbr d'octets a envoyer
+	flags = 0: type d'envoie a adopter*/
+
+	return 0;
+}
