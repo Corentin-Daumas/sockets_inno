@@ -4,7 +4,8 @@
 #include <stdlib.h> 
 #include <netinet/in.h> 
 #include <string.h> 
-#define PORT 8080 
+#define PORT 8080
+
 
 typedef struct sockaddr SOCKADDR;
 typedef struct sockaddr_in SOCKADDR_IN;
@@ -38,20 +39,21 @@ int main(int argc, char const *argv[]) {
 
 	new_socket = accept(sock_s, (SOCKADDR*)&address, &adressLen); /* permet la connexion en acceptant un appel*/
 	/* sock_s: socket precedemment ouvert
-	&address: tampon qui stock l'adresse de l'appelant
+	&address: tampon qui stocke l'adresse de l'appelant
 	&adressLen: taille de l'adresse de l'appelant */
+	while(1){
+		valRead = read(new_socket, buffer, sizeof(buffer)); /* permet la lecture dans un socket en mode connecte (TCP) */
+		/* new_socket: socket precedemment ouvert
+		buffer: pointeur sur un tampon qui va recevoir les octets d'un client
+		sizeof(buffer): nbr d'octets lu*/
+		printf("%s\n", buffer);
 
-	valRead = read(new_socket, buffer, sizeof(buffer)); /* permet la lecture dans un socket en mode connecte (TCP) */
-	/* new_socket: socket precedemment ouvert
-	buffer: pointeur sur un tampon qui va recevoir les octets d'un client
-	sizeof(buffer): nbr d'octets lu*/
-	printf("%s\n", buffer);
-
-	send(new_socket, msg, strlen(msg), 0); /* permet d'ecrire dans une socket en mode TCP*/
-	/* new_socket: socket precedemment ouvert
-	msg:(buffer) tampon contenant les octets a envoyer au client
-	strlen(msg): nbr d'octets a envoyer
-	flags = 0: type d'envoie a adopter*/
-
+		send(new_socket, msg, strlen(msg), 0); /* permet d'ecrire dans une socket en mode TCP*/
+		/* new_socket: socket precedemment ouvert
+		msg:(buffer) tampon contenant les octets a envoyer au client
+		strlen(msg): nbr d'octets a envoyer
+		flags = 0: type d'envoie a adopter*/
+		memset (buffer, 0, sizeof (buffer)); /* vide le buffer*/
+	}
 	return 0;
 }
