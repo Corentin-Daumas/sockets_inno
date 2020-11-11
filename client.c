@@ -36,8 +36,14 @@ int main(int argc, char const *argv[]) {
 
     while(1){
         printf(">>>");
+<<<<<<< HEAD
         scanf("%s", message);
         // scanf("%[^\n]", message);
+=======
+        // scanf("%24[^]", message);
+        //scanf("%s", message);
+        gets(message); //fonction gets similaire à scanf() mais d'utiliser des espaces ATTENTION msg d'erreurs à corriger 
+>>>>>>> 4464655600ef5f60f52ab22071ab32ce082b6c12
 
         /* send(sock_c, message, strlen(message), 0 ); */
         write(sock_c, message, strlen(message)); /* meme chose que le send, y a juste pas les flags */
