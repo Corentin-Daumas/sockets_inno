@@ -6,16 +6,13 @@
 
 int main(int argc, char const *argv[]) {
     char message[1024];
-    scanf("%24[^\n]", message);
+
+    scanf("%[^\n]", message);
     printf("%s\n", message);
-    // int i = 0;
-    memset (message, 0, sizeof (message));
-        // while(i!=5){
-        //     printf("%s\n", message);
-        //     message[i] = '\0';
-        //     i++;
-        // }
-    printf("%s>>\n", message);
+
+    memset (message, 0, sizeof (message)); /* remise a zero */
+    printf("%s>>\n", message); /* print char vide */
+
     return 0;
 }
 

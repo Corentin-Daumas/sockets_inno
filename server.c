@@ -18,6 +18,7 @@ int main(int argc, char const *argv[]) {
 	SOCKADDR_IN address;
 	char buffer[1024] = {0}; 
 	char *msg = "Hello! c'est le serveur";
+	// char message[1024];
 
 	int adressLen = sizeof(address); 
 
@@ -37,10 +38,28 @@ int main(int argc, char const *argv[]) {
 	listen(sock_s, 10); /* place un socket en attente de connexion 
 	le 10 represente le nbr de connexion max pouvant etre lu en attente */
 
-	new_socket = accept(sock_s, (SOCKADDR*)&address, &adressLen); /* permet la connexion en acceptant un appel*/
+	new_socket = accept(sock_s, (SOCKADDR*)&address, &adressLen); /* permet la connexion en acceptant un appel */
 	/* sock_s: socket precedemment ouvert
 	&address: tampon qui stocke l'adresse de l'appelant
 	&adressLen: taille de l'adresse de l'appelant */
+	
+	 // fonctionne pas vraiment, un message d'un cote puis un de l'autre
+	// while(1){
+ //        printf(">>>");
+ //        scanf("%s", message);
+
+	// 	write(sock_s, message, strlen(message));	
+		
+	// 	valRead = read(new_socket, buffer, sizeof(buffer));
+	// 	printf("%s\n", buffer);
+
+	// 	send(new_socket, message, strlen(message), 0);
+		
+	// 	memset (buffer, 0, sizeof (buffer));
+ //        memset (message, 0, sizeof (message));	
+	// }
+	
+
 	while(1){
 		valRead = read(new_socket, buffer, sizeof(buffer)); /* permet la lecture dans un socket en mode connecte (TCP) */
 		/* new_socket: socket precedemment ouvert
@@ -48,12 +67,12 @@ int main(int argc, char const *argv[]) {
 		sizeof(buffer): nbr d'octets lu*/
 		printf("%s\n", buffer);
 
-		send(new_socket, msg, strlen(msg), 0); /* permet d'ecrire dans une socket en mode TCP*/
+		send(new_socket, msg, strlen(msg), 0); /* permet d'ecrire dans une socket en mode TCP */
 		/* new_socket: socket precedemment ouvert
 		msg:(buffer) tampon contenant les octets a envoyer au client
 		strlen(msg): nbr d'octets a envoyer
-		flags = 0: type d'envoie a adopter*/
-		memset (buffer, 0, sizeof (buffer)); /* vide le buffer*/
+		flags = 0: type d'envoie a adopter */
+		memset (buffer, 0, sizeof (buffer)); /* vide le buffer */
 	}
 	return 0;
 }
