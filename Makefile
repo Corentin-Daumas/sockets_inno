@@ -6,5 +6,6 @@ all:
 
 test:
 		chmod 777 *
-		gcc codageRSA.c -o RSA -lm
+		gcc -g codageRSA.c -o RSA -lm
 		./RSA
+

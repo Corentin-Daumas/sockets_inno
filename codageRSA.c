@@ -5,12 +5,20 @@
 
 int premierYN(int nbr);
 int testEntree(int nbr);
+void cleCryptagePublique();
+void chiffrement(msg,n);
+long int cd(long int a);
+
+
 
 long int r;
-int test=0;
+int test=0, e[100], d[100], f, p, q;
+
 
 int main(int argc, char const *argv[]) {
-	int p, q, n, f, d, e;
+	
+	int n;
+	char msg;
 
 	/*récupéraction de n et p*/
 	printf("entrer p : ");
@@ -27,8 +35,18 @@ int main(int argc, char const *argv[]) {
 	n = p*q;
 	f = (p-1)*(q-1);
 	
+	cleCryptagePublique();
+
+	/*recuperation du message clavier*/
+	printf("Entrer votre message :");
+	scanf("%s",msg);
+	printf("%s",msg);
+	//chiffrement(msg,n);
+	printf("fin");
+
 
 }
+
 int testEntree(int nbr){
 	while(test == 0){
 		test = premierYN(nbr);	
@@ -60,3 +78,74 @@ int premierYN(int nbr){
 	}
 }
 
+/* VERSION 1 DE LA CLE D ENCRYPTION*/
+// void cleCryptagePublique(){
+// 	int compt = 0;
+// 	for(int i = 2; i < f; i++){
+// 		test = premierYN(i);
+		
+// 		if(test == 1 && i != p && i != q){
+// 			e[compt] = i;
+// 			int a = cd(e[compt]);
+// 			if (a > 0){
+// 				d[compt] = a;
+// 				compt++;
+
+// 			}
+// 			if (compt == 99){
+// 				break;
+// 			}
+// 		}
+
+// 		printf("e=%ld    d=%ld\n",e[compt] ,d[compt]);
+// 	}	
+// }
+
+
+void cleCryptagePublique()
+{
+  int k;
+  k = 0;
+  for(int i = 2; i < f; i++)
+  {
+    if(f % i == 0)
+     continue;
+    int flag = premierYN(i);
+    if(flag == 1 && i != p && i != q)
+    {
+     e[k] = i;
+     flag = cd(e[k]);
+    if(flag > 0)
+    {
+     d[k] = flag;
+     printf("e=%ld    d=%ld\n",e[k] ,d[k]);
+     k++;
+    }
+   if(k == 99)
+    break;
+   }
+ }
+}
+
+long int cd(long int a)
+{
+  long int k = 1;
+  while(1)
+  {
+    k = k + f;
+    if(k % a == 0)
+     return(k / a);
+  }
+}
+
+void chiffrement(msg,n){
+	printf("debut chiffrement");
+
+	char msgcode[100];
+	for (int i = 0; i < strlen(msg); ++i){
+		printf("for");
+		msgcode[i]= (i**e) % n;
+	}
+	printf("%s", msgcode);
+	
+}
