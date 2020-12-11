@@ -3,23 +3,26 @@
 #include<math.h>
 #include<string.h>
 
+#include "crypt.h"
+
 int premierYN(int nbr);
+int puissance(int nbr, int puiss);
 int testEntree(int nbr);
 void cleCryptagePublique();
-void chiffrement(msg,n);
+void chiffrement(n);
+void dechiffrage(n);
 long int cd(long int a);
 
 
 
-long int r;
-int test=0, e[100], d[100], f, p, q;
+long int r, msg_encr[100], msg_code[100], msg_decode[100];
+int test=0, e[100], d[100], f, p, q; 
+char msg[100];
 
 
 int main(int argc, char const *argv[]) {
-	
-	int n;
-	char msg;
 
+	int n;
 	/*récupéraction de n et p*/
 	printf("entrer p : ");
 	scanf("%d", &p);
@@ -40,9 +43,16 @@ int main(int argc, char const *argv[]) {
 	/*recuperation du message clavier*/
 	printf("Entrer votre message :");
 	scanf("%s",msg);
-	printf("%s",msg);
-	//chiffrement(msg,n);
-	printf("fin");
+	for(int i = 0; msg[i] != '\0'; i++){
+    	msg_encr[i] = msg[i]; 
+	}
+	for(int i = 0; msg[i] != '\0'; i++){ //test print du char en long int
+		printf("%d\n",msg_encr[i]);
+	}
+	chiffrement(n);
+	printf("---fin---\n");
+	dechiffrage(n);
+	printf("---fin---\n");
 
 
 }
@@ -77,6 +87,15 @@ int premierYN(int nbr){
 		return 1;
 	}
 }
+
+// int puissance(long long int nbr, long long int puiss){
+// 	int calcule = nbr;
+// 	for(int i = 1; i<puiss; i++){
+// 		printf("%d\n", calcule);
+// 		calcule = calcule*nbr;
+// 	}
+// 	return calcule;
+// }
 
 /* VERSION 1 DE LA CLE D ENCRYPTION*/
 // void cleCryptagePublique(){
@@ -138,14 +157,39 @@ long int cd(long int a)
   }
 }
 
-void chiffrement(msg,n){
-	printf("debut chiffrement");
 
-	char msgcode[100];
-	for (int i = 0; i < strlen(msg); ++i){
-		printf("for");
-		msgcode[i]= (i**e) % n;
+void chiffrement(n){
+	printf("debut chiffrement\n");
+	// for (int i = 0; i < strlen(msg); ++i){
+	for(int i = 0; msg[i] != '\0'; i++){
+		long long int a = msg_encr[i]-96;
+		a = pow(a, e[0]);
+		// a = puissance(a, e[0]);	
+		printf("puissance>>>%lld\n", a);
+		a = a % n; // -96 parce que ASCII
+		printf("modulo>>>%lld\n", a);
+		msg_code[i]= a+96; // +96 parce que ASCII
+		printf("----%lld\n", msg_code[i]);
 	}
-	printf("%s", msgcode);
+	// printf("%ld\n", msg_code);
 	
 }
+
+void dechiffrage(n){
+	printf("debut dechiffrement\n");
+	for(int i = 0; msg[i] != '\0'; i++){
+		long long int a = msg_code[i]-96;
+		printf("a+96:%lld   -   %d\n", a+96, d[0]);
+		a = pow(a, d[0]);
+		printf("puissance:%lld\n", a);
+		a = a % n;
+		printf("modulo+96:%lld\n", a+96);
+		printf(">>>%lld\n", a);
+		msg_decode[i]= a+96;
+		printf("%d\n", msg_decode[i]);
+	}
+	
+}
+
+
+

@@ -48,7 +48,7 @@ int main(int argc, char const *argv[]) {
 	    int enfant;
 	    if((enfant = fork()) == 0) {
 	        while (recv(conn, message, 100, 0)>0) {
-	            printf("client : %s\n", message);
+	            printf("%d : %s\n", conn, message);
 	            memset (message, 0, sizeof (message));
 	        }
 	        exit(0);

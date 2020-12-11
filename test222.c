@@ -33,8 +33,9 @@ int main()
   printf("\nENTER MESSAGE OR STRING TO ENCRYPT\n");
 
   scanf("%s",msg);
-  for(i = 0; msg[i] != NULL; i++)
-    m[i] = msg[i];
+  for(i = 0; msg[i] != NULL; i++)  // '\0'
+    m[i] = msg[i]; 
+
   n = x * y;
   t = (x-1) * (y-1);
   encryption_key();
@@ -55,7 +56,7 @@ int prime(long int pr)
      return 0;
   }
   return 1;
- }
+}
 
 //function to generate encryption key
 void encryption_key()
