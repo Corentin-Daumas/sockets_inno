@@ -2,9 +2,13 @@ all:
 		chmod 777 *
 		gcc client.c -o client
 		gcc server.c -o server
-		gcc encoding_test.c -o encoding_test
 
 test:
+		chmod 777 *
+		gcc clientTest.c -o client
+		gcc serverTest.c -o server
+
+crypt:
 		chmod 777 *
 		gcc -g codageRSA.c -o RSA -lm
 		./RSA
@@ -13,8 +17,8 @@ test:
 CC=gcc
 CFLAGS=-Wall -O1
 LDFLAGS=  # Link Dynamic Flags (librairie)
-EXEC=fact
-OBJ=factorielle.o seance7.o
+EXEC=RSA
+OBJ=crypt.o codageRSA.o
 #-------------------
 
 bind: $(EXEC)
@@ -22,14 +26,14 @@ bind: $(EXEC)
 $(EXEC): $(OBJ)
 	$(CC) -o $(EXEC) $^ $(LDFLAGS)
 
-$.o: %.c
+$.o: %.py
 	$(CC) -o -c $@ -c $<(CFLAGS)
 
-factorielle.o: factorielle.c
-	$(CC) -c factorielle.c
+crypt.o: crypt.py
+	$(CC) -c crypt.py
 
-seance7.o: seance7.c
-	$(CC) -c seance7.c
+codageRSA.o: codageRSA.c
+	$(CC) -c codageRSA.c -lm
 
 clean:
 	rm *.o
