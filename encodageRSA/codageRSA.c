@@ -12,7 +12,7 @@ void cleCryptagePublique();
 void chiffrement(n);
 void dechiffrage(n);
 long int cd(long int a);
-int initNbrGrd();
+int computePowm(input_nbr, input_exp, input_mod);
 
 
 long int r, msg_encr[100], msg_code[100], msg_decode[100];
@@ -22,7 +22,8 @@ char msg[100];
 
 int main(int argc, char const *argv[]) {
 
-	initNbrGrd();
+	// int test = computePowm(171, 37, 77);
+	// printf(">>>%d\n", test);
 
 	int n;
 	/*récupéraction de n et p*/
@@ -51,10 +52,13 @@ int main(int argc, char const *argv[]) {
 	for(int i = 0; msg[i] != '\0'; i++){ //test print du char en long int
 		printf("%d\n",msg_encr[i]);
 	}
-	// chiffrement(n);
-	// printf("---fin---\n");
-	// dechiffrage(n);
-	// printf("---fin---\n");
+
+
+
+	chiffrement(n);
+	printf("---fin---\n");
+	dechiffrage(n);
+	printf("---fin---\n");
 
 
 }
@@ -90,27 +94,45 @@ int premierYN(int nbr){
 	}
 }
 
-int initNbrGrd(){
-	char inputStr[1024];
-	mpz_t kp;
-	int flag;
-	mpz_init(kp);
-	mpz_set_ui(kp,0);
-	/* 2. Parse the input string as a base 10 number */
-	// flag = mpz_set_str(kp,inputStr, 10);
-	// assert (flag == 0); /* If flag is not 0 then the operation failed */
-	/* Print n */
-	// printf ("n = ");
-	// mpz_out_str(stdout,10,kp);
-	// printf ("\n");
+int computePowm(input_nbr, input_exp, input_mod){
+	mpz_t nbr; mpz_init(nbr); mpz_set_ui(nbr, input_nbr);
+	mpz_t exp; mpz_init(exp); mpz_set_ui(exp, input_exp);
+	mpz_t mod; mpz_init(mod); mpz_set_ui(mod, input_mod);
 
- 	mpz_pow_ui(kp, 171, 37);
-	printf (">>>>");
-	mpz_out_str(stdout,10,kp);
+	mpz_powm(nbr, nbr, exp, mod);
+	
+	printf (" resultat chiffrement = ");
+	mpz_out_str(stdout,10,nbr);
 	printf ("\n");
-	/* 6. Clean up the mpz_t handles or else we will leak memory */
-	mpz_clear(kp);
+	int res = mpz_get_ui(nbr);
 
+	mpz_clear(nbr);
+
+	return res;
+
+
+
+
+  // char inputStr[1024];
+
+  // mpz_t n;
+  // int flag;
+
+  // printf ("Enter your number: ");
+  // scanf("%1023s" , inputStr);
+
+  // mpz_init(n);
+  // mpz_set_ui(n,0);
+
+  // flag = mpz_set_str(n,inputStr, 10);
+  // assert (flag == 0);
+
+  // mpz_pow_ui(n,n,37);
+  // printf (" nbr^37 = ");
+  // mpz_out_str(stdout,10,n);
+  // printf ("\n");
+  // return n;
+  // mpz_clear(n);
 }
 
 
@@ -185,38 +207,26 @@ long int cd(long int a)
 
 
 
-// void chiffrement(n){
-// 	printf("debut chiffrement\n");
-// 	// for (int i = 0; i < strlen(msg); ++i){
-// 	for(int i = 0; msg[i] != '\0'; i++){
-// 		long long int a = msg_encr[i]-96;
-// 		a = pow(a, e[0]);
-// 		// a = puissance(a, e[0]);	
-// 		printf("puissance>>>%lld\n", a);
-// 		a = a % n; // -96 parce que ASCII
-// 		printf("modulo>>>%lld\n", a);
-// 		msg_code[i]= a+96; // +96 parce que ASCII
-// 		printf("----%lld\n", msg_code[i]);
-// 	}
-// 	// printf("%ld\n", msg_code);
-	
-// }
+void chiffrement(n){
+	printf("debut chiffrement\n");
+	// for (int i = 0; i < strlen(msg); ++i){
+	for(int i = 0; msg[i] != '\0'; i++){
+		int a = msg_encr[i]-96;
+		a = computePowm(a, e[0], n);
+		msg_code[i]= a+96; // +96 parce que ASCII
+		printf("chiffré +96 :%c\n", msg_code[i]);
+	}
+}
 
-// void dechiffrage(n){
-// 	printf("debut dechiffrement\n");
-// 	for(int i = 0; msg[i] != '\0'; i++){
-// 		long long int a = msg_code[i]-96;
-// 		printf("a+96:%lld   -   %d\n", a+96, d[0]);
-// 		a = pow(a, d[0]);
-// 		printf("puissance:%lld\n", a);
-// 		a = a % n;
-// 		printf("modulo+96:%lld\n", a+96);
-// 		printf(">>>%lld\n", a);
-// 		msg_decode[i]= a+96;
-// 		printf("%d\n", msg_decode[i]);
-// 	}
-	
-// }
+void dechiffrage(n){
+	printf("debut dechiffrement\n");
+	for(int i = 0; msg[i] != '\0'; i++){
+		int a = msg_code[i]-96;
+		a = computePowm(a, d[0], n);
+		msg_decode[i]= a+96;
+		printf("dechiffré +96 :%c\n", msg_decode[i]);
+	}
+}
 
 
 

@@ -1,1 +1,0 @@
-int puissMod(int nbr, int p, int m);

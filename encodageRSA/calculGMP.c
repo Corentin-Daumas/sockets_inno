@@ -30,9 +30,9 @@ int main(){
   mpz_out_str(stdout,10,n);
   printf ("\n");
 
-  /* 3. Add one to the number */
+  /* 3. n a la puissance k */
 
-  mpz_pow_ui(n,n,37); /* n = n + 1 */
+  mpz_pow_ui(n,n,37); /* n = n^k */
 
   /* 4. Print the result */
 
