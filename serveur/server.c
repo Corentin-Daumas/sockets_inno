@@ -41,10 +41,6 @@ int main(int argc, char const *argv[]) {
 	while(1) {
 		conn = accept(sock_s, (SOCKADDR *)&address, &adressLen);
 		conn1 = accept(sock_s, (SOCKADDR *)&address, &adressLen);
-		// tabClient[compteur] = conn;
-		// compteur++;	
-		// printf("%d\n", conn);
-		// printf("%d\n", conn1);
 	/* permet la connexion en acceptant un appel 
 	sock_s: socket precedemment ouvert
 	&address: tampon qui stocke l'adresse de l'appelant
