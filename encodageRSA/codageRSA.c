@@ -169,8 +169,7 @@ int computePowm(input_nbr, input_exp, input_mod){
 // }
 
 
-void cleCryptagePublique()
-{
+void cleCryptagePublique(){
   int k;
   k = 0;
   for(int i = 2; i < f; i++)
@@ -194,8 +193,7 @@ void cleCryptagePublique()
  }
 }
 
-long int cd(long int a)
-{
+long int cd(long int a){
   long int k = 1;
   while(1)
   {

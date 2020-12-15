@@ -51,8 +51,8 @@ int main(void)
 	switch(key)
 	  {
 	  case 'o':
-		x_off += -1;
-		break;
+		printw("ok");
+		break;	
 	  case 'm':
 		y_off += 1;
 		break;

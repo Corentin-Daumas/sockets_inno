@@ -1,87 +1,126 @@
-#include <stdio.h>
-#include <sys/socket.h> 
-#include <stdlib.h>
-#include <netinet/in.h>
-#include <string.h>
+ #include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<sys/socket.h>
+#include<arpa/inet.h>
+#include<unistd.h>
+#include<signal.h>
+#include<sys/wait.h>
 
-struct sockaddr_in serv; 
-int socket_s; 
-int conn;
-char message[100], buffer[100];  
 
-typedef struct sockaddr SOCKADDR;
-typedef struct sockaddr_in SOCKADDR_IN;
+static void   sigchld_handler(int signo) {  
+    pid_t PID;   
+    int status;  
 
-int main(int argc, char const *argv[]) { 
-	serv.sin_family = AF_INET;
-	serv.sin_port = htons(8096);
-	serv.sin_addr.s_addr = INADDR_ANY;
-	socket_s = socket(AF_INET, SOCK_STREAM, 0); 
+  do {  
+     PID = waitpid(-1,&status,WNOHANG);  
+      }   
+  while ( PID != -1 );  
+// Re-instate handler
 
-	bind(socket_s, (struct sockaddr *)&serv, sizeof(serv)); 
-	listen(socket_s,5); 
-	
-
-	while(conn = accept(socket_s, (struct sockaddr *)NULL, NULL)) {
-	    int enfant;
-	    enfant = fork();
-	    if(enfant == 0) {
-	        while (recv(conn, message, 100, 0)>0) {
-	        	// read(conn, message, sizeof(message));
-	            printf("%d: %s\n", conn, message);
-
-				write(conn,message,sizeof(message));
-				listen(conn,1);
-				// read(conn,str,sizeof(str));
-
-				// memset (buffer, 0, sizeof (buffer));
-	            memset (message, 0, sizeof (message));
-	        }
-	        exit(0);
-	    }
-	}
+  signal(SIGCHLD,sigchld_handler);  
 }
 
+  int main(int argc ,char *argv[])
+{ 
+   int server_socket; 
+    int client_socket , size_structure,read_size,binds;
+    int *new_socket;
+    struct sockaddr_in server, client ;
+    server_socket = socket(AF_INET, SOCK_STREAM,0);
+    char client_message[100]="";
+     pid_t PID;                    /* Process ID */  
+/* * Set signal handler for SIGCHLD: */
+signal(SIGCHLD,sigchld_handler);
+
+    if(server_socket == -1)
+    {  
+        puts("socket has nt been created");
+    }
+    else 
+        puts("socket has been created");
+
+    //give values to the structure for server
+ server.sin_family = AF_INET;
+ server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_port = htons(8888);
+
+//step 3 bind karo 
+binds = bind(server_socket,(struct sockaddr*)&server,sizeof(server));
+
+if(binds<0)
+    {
+    perror("bind failed.Error");
+    return 1;
+    } 
+    puts("SOcket has been binded to address");
+
+//listen to incoming request
+
+listen(server_socket,30); 
+size_structure = sizeof(struct sockaddr_in);
+FILE *fp;
+fp =fopen("test.txt","w");
+
+while (1)
+    {
+    	client_socket = accept(server_socket,(struct sockaddr *)&client,(socklen_t*)&size_structure);
+     if(client_socket<0)
+        { 
+            puts("client is nt connected");
+        return 1;
+        }
+    else 
+        puts("connection accepted");
+
+    if((PID = fork())== -1)
+        { 
+            close(client_socket);
+            continue;
+        }
+
+    else if(PID >0)
+        {
+        close(client_socket);
+        continue;
+        }
+
+    setlinebuf(fp);
+
+    while(( read_size=recv(client_socket,client_message,2000,0))>0)
+        {
+
+        puts(client_message);
+            write(client_socket,client_message,sizeof(client_message));
+        for(int i=0;i<500;i++)
+            { 
+            fwrite(client_message,1,sizeof(client_message),fp);
+            } 
+        if(PID==-1)
+            {  
+            exit(0);
+            }
+        memset(client_message,0,strlen(client_message));
+
+        }
+
+    if(read_size==-1)
+        {
+        puts("client disconnected");
+        fflush(stdout);
+        close(client_socket);
+        exit(0);
+        }
+    else if(read_size == 0)
+        { 
+            printf("recveiving failed");
+            }
+    }
 
 
 
-// #include<sys/socket.h>
-// #include<sys/types.h>
-// #include<stdio.h>
-// #include<arpa/inet.h>
-// #include<netinet/in.h>
-// #include<string.h>
-// #include<unistd.h>
-// #define SER_PORT 8096
-// int main()
-// {
-// int a,sersock,newsock,n;
-// char str[25],str2[25];
-// struct sockaddr_in seraddr;
-// struct sockaddr_in cliinfo;
-// socklen_t csize=sizeof(cliinfo);
-// seraddr.sin_family=AF_INET;
-// seraddr.sin_port=htons(SER_PORT);
-// seraddr.sin_addr.s_addr=htonl(INADDR_ANY);
-
-// sersock=socket(AF_INET,SOCK_STREAM,0);
-// bind(sersock,(struct sockaddr *)&seraddr,sizeof(seraddr));
-// listen(sersock,1);
-
-// newsock=accept(sersock,(struct sockaddr *)&cliinfo,&csize);
-// read(newsock,str,sizeof(str));
-// printf("\n client msg:%s",str);
-// printf("\n server msg:");
-// scanf("%s",str2);
-// write(newsock,str2,sizeof(str2));
-// listen(newsock,1);
-// read(newsock,str,sizeof(str));
-// n=strcmp(str,"BYE");
-// a=strcmp(str2,"BYE");
-// while(n!=0||a!=0);
-// close(newsock);
-// close(sersock);
-// return 0;
-// }
- 
-
+memset(client_message,0,strlen(client_message));
+close(client_socket);
+fclose(fp);
+return 0;
+}

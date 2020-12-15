@@ -13,7 +13,7 @@ typedef struct sockaddr_in SOCKADDR_IN;
 /* On utilisera le mode connecte car plus simple
 pas besoin de refaire la connexion a chaque fois */
 
-int sock_s, conn;
+int sock_s, conn, conn1, tabClient[5], compteur=0, a;
 char message[100]; 
 SOCKADDR_IN address;
 
@@ -35,22 +35,40 @@ int main(int argc, char const *argv[]) {
 	bind(sock_s, (SOCKADDR *)&address, sizeof(address)); /* bind de la socket */
 
 	listen(sock_s, 5); /* place un socket en attente de connexion 
-	le 5 represente le nbr de connexion max pouvant etre lu en attente */
+	le 5 represente le nbr de connexion max pouvant etre mis en attente */
 
 /*------------Test forking------------------*/
-	while(conn = accept(sock_s, (SOCKADDR *)&address, &adressLen)) {
+	while(1) {
+		conn = accept(sock_s, (SOCKADDR *)&address, &adressLen);
+		conn1 = accept(sock_s, (SOCKADDR *)&address, &adressLen);
+		// tabClient[compteur] = conn;
+		// compteur++;	
+		// printf("%d\n", conn);
+		// printf("%d\n", conn1);
 	/* permet la connexion en acceptant un appel 
 	sock_s: socket precedemment ouvert
 	&address: tampon qui stocke l'adresse de l'appelant
 	&adressLen: taille de l'adresse de l'appelant */ 
+
 	    int enfant;
 	    enfant = fork();
-	    if(enfant == 0) {
-	        while (recv(conn, message, 100, 0)>0) {
-	            printf("%d : %s\n", conn, message);
 
-	            write(conn, message, sizeof(message));
-	            listen(conn, 1);
+	    if(enfant == 0) {
+	        while (1) {
+	        	if(recv(conn, message, 100, 0)){
+		            write(conn1, message, sizeof(message));
+	        		printf("%d : %s\n",conn, message);
+	        		listen(conn1, 1);
+	        		memset (message, 0, sizeof (message));
+	        	}
+	            if(recv(conn1, message, 100, 0)){
+	            	write(conn, message, sizeof(message));
+	            	printf("%d : %s\n",conn1, message);
+	            	listen(conn, 1);
+	            	memset (message, 0, sizeof (message));
+	            }
+	            
+
 
 	            memset (message, 0, sizeof (message));
 	        }

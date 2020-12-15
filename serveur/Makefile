@@ -1,6 +1,6 @@
 all:
 		chmod 777 *
-		gcc client.c -o client
+		gcc -g client.c -o client -lm -lgmp
 		gcc server.c -o server
 
 test:
