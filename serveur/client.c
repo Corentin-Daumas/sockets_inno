@@ -13,11 +13,11 @@
 int premierYN(int nbr);
 int testEntree(int nbr);
 void cleCryptagePublique();
-void chiffrement(n);
-void dechiffrage(n);
-long int cd(long int a);
-int computePowm(input_nbr, input_exp, input_mod);
-
+void chiffrement(int n);
+void dechiffrage(int n);
+long int getD(long int a);
+int computePowm(int input_nbr, int input_exp, int input_mod);
+void viderBuffer(void);
 
 typedef struct sockaddr SOCKADDR;
 typedef struct sockaddr_in SOCKADDR_IN;
@@ -31,8 +31,8 @@ SOCKADDR_IN serv_address;
 int main(int argc, char const *argv[]) {
 
 
-    int n;
     /*récupéraction de n et p*/
+    int n;
     printf("entrer p : ");
     scanf("%d", &p);
     p = testEntree(p);
@@ -52,18 +52,18 @@ int main(int argc, char const *argv[]) {
     cleCryptagePublique();
     printf("------------------------\n");
 
-
+    /* déclaration de la socket client */
     sock_c = socket(AF_INET, SOCK_STREAM, 0); 
 
     serv_address.sin_family = AF_INET; 
     serv_address.sin_port = htons(PORT); 
 
-	inet_pton(AF_INET, "127.0.0.1", &serv_address.sin_addr);
+	// inet_pton(AF_INET, "127.0.0.1", &serv_address.sin_addr); //pas utile ici
     connect(sock_c, (SOCKADDR *)&serv_address, sizeof(serv_address));
 
 
     while(1){
-        // on vide toutes les mémoires des tableaux pour ne pas avoir de charactères indésirables
+        // on vide toutes les mémoires des tableaux pour ne pas avoir de caractères indésirables
         for(int i = 0; i<100; i++){
             message[i] = 0;
             msg_code[i] = 0;
@@ -76,40 +76,28 @@ int main(int argc, char const *argv[]) {
             message[strlen(message)-1] = 0;
             for(int i = 0; message[i] != '\0'; i++){ // avant d'écrire dans la socket il faut chiffrer le message
                 msg_encr[i] = message[i]; 
-                // printf("%d ", msg_encr[i]);
             }
-            // for(int i = 0; message[i] != '\0'; i++){ // test print du char en long int
-            //     printf("%d\n",msg_encr[i]);
-            // }
+
             chiffrement(n);
-            // for(int i=0; sizeof(msg_code); i++){
-            //     printf("%d\n", msg_code[i]);
-            // } 
-            // printf("\nmessage envoyé:  %s\n", codeEnvoie);
+
             write(sock_c, codeEnvoie, sizeof(codeEnvoie)); // on écrit/envoie le message chiffré dans la socket
             listen(sock_c, 1); // on remet la socket en écoute pour receptionner le prochain message
             memset(message, 0, sizeof(message)); // on nettoie la mémoire de message pour pas surcharger le prog
         }
 
-        if(read(sock_c, message, sizeof(message))){
-            // printf("%s\n", message);
+        if(read(sock_c, message, sizeof(message))){ // lis la socket et place le contenant dans "message"
             dechiffrage(n);
-            // printf("messsage reçu:");
-            // for(int i = 0; message[i] != '\0'; i++){
-                // printf("%c\n", msg_decode[i]);    
-            // }
             listen(sock_c, 1);
             memset(message, 0, sizeof(message));
         }
-
         }
     }
 void viderBuffer(void){
-  int c;
-  while((c=getchar()) != EOF && c != '\n');
- 
+    int c;
+    while((c=getchar()) != EOF && c != '\n');
 }
 
+/* On verifie que les entrées p et q sont des nombres premiers */
 int testEntree(int nbr){
     while(test == 0){
         test = premierYN(nbr);  
@@ -125,6 +113,7 @@ int testEntree(int nbr){
     }
 }
 
+/* Test si un nombre est premier ou non */
 int premierYN(int nbr){
     if(nbr == 1){
         return 0;
@@ -141,65 +130,61 @@ int premierYN(int nbr){
     }
 }
 
-int computePowm(input_nbr, input_exp, input_mod){
+/* Fonction qui s'occupe de l'exposant et du modulo pour chiffrer les caractères */
+int computePowm(int input_nbr, int input_exp, int input_mod){
     mpz_t nbr; mpz_init(nbr); mpz_set_ui(nbr, input_nbr);
     mpz_t exp; mpz_init(exp); mpz_set_ui(exp, input_exp);
     mpz_t mod; mpz_init(mod); mpz_set_ui(mod, input_mod);
-
     mpz_powm(nbr, nbr, exp, mod);
-    
-    // printf (" resultat chiffrement = ");
-    // mpz_out_str(stdout,10,nbr);
-    // printf ("\n");
+
     int res = mpz_get_ui(nbr);
 
     mpz_clear(nbr);
-
     return res;
 }
 
+/* Fonction qui définie les multiples paires possibles de e et d */
 void cleCryptagePublique(){
-  int k;
-  k = 0;
-  for(int i = 2; i < f; i++)
-  {
-    if(f % i == 0)
-     continue;
-    int flag = premierYN(i);
-    if(flag == 1 && i != p && i != q)
-    {
-     e[k] = i;
-     flag = cd(e[k]);
-    if(flag > 0)
-    {
-     d[k] = flag;
-     printf("e=%ld    d=%ld\n",e[k] ,d[k]);
-     k++;
+    int k;
+    k = 0;
+    for(int i = 2; i < f; i++){
+        if(f % i == 0){
+            continue;
+        }
+        int flag = premierYN(i);
+        if(flag == 1 && i != p && i != q){
+            e[k] = i;
+            flag = getD(e[k]);
+            if(flag > 0){
+                d[k] = flag;
+                printf("e=%ld    d=%ld\n",e[k] ,d[k]);
+                k++;
+            }
+            if(k == 99){
+                break;
+            }
+        }
     }
-   if(k == 99)
-    break;
-   }
- }
 }
 
-long int cd(long int a){
-  long int k = 1;
-  while(1)
-  {
-    k = k + f;
-    if(k % a == 0)
-     return(k / a);
-  }
+/* Fonction qui retourne les valeurs de d en fonction des valeurs de e */
+long int getD(long int a){
+    long int k = 1;
+    while(1){
+        k = k + f;
+        if(k % a == 0){
+            return(k / a);
+        }
+    }
 }
 
-void chiffrement(n){
+/* Fonction qui s'occupe de chiffrer caractères par caractères */
+void chiffrement(int n){
     // printf("debut chiffrement\n");
-    // for (int i = 0; i < strlen(msg); ++i){
     for(int i = 0; message[i] != '\0'; i++){
         int a = msg_encr[i]-96;
         a = computePowm(a, e[0], n);
         msg_code[i] = a; // +96 parce que ASCII
-        // printf("chiffré +96 :%d\n", msg_code[i]);
     }
     for(int i = 0; message[i] != '\0'; i++){
         codeEnvoie[i] = (char) msg_code[i];
@@ -208,9 +193,9 @@ void chiffrement(n){
     // printf("----------%s\n", test2);
 }
 
-void dechiffrage(n){
+/* Fontion qui déchiffre le message reçu */
+void dechiffrage(int n){
     // printf("debut dechiffrement\n");
-    // memset(msg_code, 0, sizeof(msg_code));
     for(int i = 0; message[i] != '\0'; i++){
         codeRecu[i] = message[i];
         // printf("%d ", codeRecu[i]);
@@ -221,10 +206,14 @@ void dechiffrage(n){
         int a = codeRecu[i];
         a = computePowm(a, d[0], n);
         msg_decode[i]= a+96;
-        printf("%c", msg_decode[i]);
+        if(msg_decode[i] == '}'){
+            printf(" ");
+        }
+        else{
+            printf("%c", msg_decode[i]);
+        }
     }
     printf("\n");
     // printf("%d\n", strlen(msg_decode));
 }
-
 

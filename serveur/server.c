@@ -10,7 +10,7 @@
 typedef struct sockaddr SOCKADDR;
 typedef struct sockaddr_in SOCKADDR_IN;
 
-/* On utilisera le mode connecte car plus simple
+/* On utilisera le mode connecte car plus simple,
 pas besoin de refaire la connexion a chaque fois */
 
 int sock_s, conn, conn1, tabClient[5], compteur=0, a;
@@ -51,10 +51,10 @@ int main(int argc, char const *argv[]) {
 
 	    if(enfant == 0) {
 	        while (1) {
-	        	if(recv(conn, message, 100, 0)){
-		            write(conn1, message, sizeof(message));
+	        	if(recv(conn, message, 100, 0)){ // lis le message reçu et le stock dans la variable message	
+		            write(conn1, message, sizeof(message)); // transmet le message reçu au deuxième client
 	        		printf("%d : %s\n",conn, message);
-	        		listen(conn1, 1);
+	        		listen(conn1, 1); // remet la socket en écoute pour les message futures
 	        		memset (message, 0, sizeof (message));
 	        	}
 	            if(recv(conn1, message, 100, 0)){
@@ -63,8 +63,6 @@ int main(int argc, char const *argv[]) {
 	            	listen(conn, 1);
 	            	memset (message, 0, sizeof (message));
 	            }
-	            
-
 
 	            memset (message, 0, sizeof (message));
 	        }
