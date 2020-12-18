@@ -58,7 +58,7 @@ int main(int argc, char const *argv[]) {
     serv_address.sin_family = AF_INET; 
     serv_address.sin_port = htons(PORT); 
 
-	// inet_pton(AF_INET, "127.0.0.1", &serv_address.sin_addr); //pas utile ici
+	inet_pton(AF_INET, "192.168.43.207", &serv_address.sin_addr); //pas utile ici
     connect(sock_c, (SOCKADDR *)&serv_address, sizeof(serv_address));
 
 
