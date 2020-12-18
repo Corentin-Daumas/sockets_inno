@@ -8,7 +8,7 @@
 #include <gmp.h>
 #include <assert.h>
 
-#define PORT 8096
+#define PORT 8080
 
 int premierYN(int nbr);
 int testEntree(int nbr);

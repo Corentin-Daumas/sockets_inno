@@ -4,7 +4,7 @@
 #include <stdlib.h> 
 #include <netinet/in.h> 
 #include <string.h> 
-#define PORT 8096
+#define PORT 8080
 
 
 typedef struct sockaddr SOCKADDR;
